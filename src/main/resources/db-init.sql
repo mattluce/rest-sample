@@ -27,3 +27,5 @@ insert into person (firstname, middlename, lastname) values ('Andrew',null,'Jack
 insert into person (firstname, middlename, lastname) values ('Martin',null,'Van Buren');
 insert into person (firstname, middlename, lastname) values ('William','Henry','Harrison');
 insert into person (firstname, middlename, lastname) values ('John',null,'Tyler');
+
+insert into pet(name,personId) values ('Fido',1);

@@ -1,49 +1,65 @@
 package com.hoopladigital.resource;
 
-import com.hoopladigital.bean.Person;
-import com.hoopladigital.service.PersonService;
-import com.hoopladigital.test.AbstractTest;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.util.Collections;
-import java.util.List;
+import com.google.inject.Inject;
+import com.hoopladigital.bean.Person;
 
-import static com.hoopladigital.test.MockHelper.allDeclaredMocks;
+import com.hoopladigital.test.AbstractMapperTest;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
-public class PersonResourceTest extends AbstractTest {
+public class PersonResourceTest extends AbstractMapperTest {
 
-	@Mock
-	private PersonService personService;
 
+	@Inject
 	private PersonResource personResource;
 
-	@Before
-	public void beforePersonResourceTest() {
-		personResource = new PersonResource(personService);
+	@Test
+	public void getList() {
+
+		assertEquals(10,personResource.getPersonList().size());
 	}
 
 	@Test
-	public void should_get_person_list() {
+	public void testPut() {
 
-		// setup
-		final List<Person> expected = Collections.emptyList();
-		when(personService.getPersonList()).thenReturn(expected);
+		personResource.update(new Person(null, "Tom","Rex","Jones"),1L);
+		final Response person = personResource.getPerson(1L);
+		assertEquals("Tom",((Person)person.getEntity()).getFirstName());
+		assertEquals("Rex",((Person)person.getEntity()).getMiddleName());
+		assertEquals("Jones",((Person)person.getEntity()).getLastName());
+	}
 
-		// run test
-		final List<Person> actual = personResource.getPersonList();
 
-		// verify mocks / capture values
-		verify(personService).getPersonList();
-		verifyNoMoreInteractions(allDeclaredMocks(this));
+	@Test
+	public void testDelete() {
+		assertEquals(Response.Status.OK.getStatusCode(),personResource.getPerson(1L).getStatus());
+		assertEquals(Response.Status.NO_CONTENT.getStatusCode(),personResource.delete(1L).getStatus());
+		try {
+			personResource.getPerson(1L);
+			fail("expected not found");
+		} catch (NotFoundException e) {
 
-		// assert results
-		assertEquals(expected, actual);
+		}
+	}
+
+	@Test
+	public void testInsert() {
+
+		final List<Person> personList = personResource.getPersonList();
+		assertEquals(10,personList.size());
+		personResource.insert(new Person(null, "Tom","Rex","Jones"));
+		final List<Person> newPersonList = personResource.getPersonList();
+		assertEquals(11,newPersonList.size());
 
 	}
 

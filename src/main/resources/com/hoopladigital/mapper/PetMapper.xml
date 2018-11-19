@@ -27,7 +27,7 @@
 		from Pet where id = #{petId} and personId = #{personId}
 	</select>
 
-	<select id="deletePet">
+	<select id="deletePet" flushCache="true">
 		delete from Pet where id = #{id}
 	</select>
 

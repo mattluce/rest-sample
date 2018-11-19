@@ -23,7 +23,7 @@
 		from Person where id = #{id}
 	</select>
 
-	<select id="deletePerson">
+	<select id="deletePerson" flushCache="true">
 		delete from Person where id = #{id}
 	</select>
 
