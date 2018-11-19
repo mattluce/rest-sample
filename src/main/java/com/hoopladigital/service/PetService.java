@@ -20,18 +20,16 @@ public class PetService {
 		return petMapper.getPetList(personId);
 	}
 
-	public Pet getPet(Long id) {
-		return petMapper.getPet(id);
-
+	public Pet getPetForPerson(Long personId, Long petId) {
+		return petMapper.getPetForPerson(personId,petId);
 	}
 
 	public void update(Pet Pet) {
 		petMapper.updatePet(Pet);
 	}
 
-	public Pet insert(Pet Pet) {
+	public void insert(Pet Pet) {
 		petMapper.insertPet(Pet);
-		return Pet;
 	}
 
 	public void delete(Long id) {

@@ -3,74 +3,87 @@ package com.hoopladigital.resource;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.hoopladigital.bean.Pet;
+import com.hoopladigital.service.PersonService;
 import com.hoopladigital.service.PetService;
 
-@Produces("application/json")
-@Path("/people/{personId}/")
+@Path("/people/{personId}/pets")
+@Produces(MediaType.APPLICATION_JSON)
 public class PetResource {
 	
 	private PetService petService;
+	private PersonService personService;
 	
 	@Inject
-	public PetResource(PetService petService) {
+	public PetResource(PetService petService, PersonService personService) {
 		this.petService = petService;
+		this.personService = personService;
 	}
 
 	@GET
-	@Path("/pets")
-	public List<Pet> getPetList(@PathParam("personId") Long personId) { // todo, check for person
+	public List<Pet> getPetList(@PathParam("personId") Long personId) {
 		return petService.getPetList(personId);
 	}
 
 	@GET
-	@Path("/pets/{id}")
-	public Response getPet(@PathParam("id") Long id) {
-		final Pet Pet = petService.getPet(id);
-		if (Pet == null) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		}
-		return Response.ok().entity(Pet).build();
-	}
+	@Path("/{id}")
+	public Response getPet(@PathParam("personId") Long personId,
+						   @PathParam("id") Long id) {
 
-	@PUT
-	@Path("/pets")
-	public Response update(Pet Pet) {
-		final Pet existingPet = petService.getPet(Pet.getId());
-		if (existingPet == null) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		}
+		final Pet pet = findPet(personId,id);
 
-		petService.update(Pet);
-		return Response.ok().entity(petService.getPet(Pet.getId())).build();
+		return Response.ok().entity(pet).build();
 	}
 
 	@POST
-	@Path("/pets")
-	public Response insert(Pet Pet) {
-		petService.insert(Pet);
-		return Response.ok().entity(Pet).build();
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insert(@PathParam("personId") Long personId, Pet pet) {
+
+		pet.setPersonId(personId);
+		petService.insert(pet);
+		return Response.status(Response.Status.CREATED).entity(pet).build();
+	}
+
+	@PUT
+	@Path("/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response update(@PathParam("personId") Long personId, @PathParam("id") Long id, Pet pet) {
+
+		final Pet existingPet = findPet(personId,id);
+
+		existingPet.setName(pet.getName());
+
+		petService.update(existingPet);
+		return Response.ok().entity(existingPet).build();
 	}
 
 	@DELETE
-	@Path("/pets/{id}")
-	public Response delete(@PathParam("id") Long id) {
+	@Path("/{id}")
+	public Response delete(@PathParam("personId") Long personId, @PathParam("id") Long id) {
 
-		final Pet Pet = petService.getPet(id);
-		if (Pet == null) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		}
+		findPet(personId, id);
 
 		petService.delete(id);
 		return Response.status(Response.Status.NO_CONTENT).build();
+	}
+
+	private Pet findPet(Long personId, Long id) {
+		final Pet existingPet = petService.getPetForPerson(personId, id);
+		if (existingPet == null) {
+			throw new NotFoundException();
+		}
+		return existingPet;
 	}
 }
