@@ -19,10 +19,10 @@ public class PersonMapperTest extends AbstractMapperTest {
 	public void should_get_person_list() throws Exception {
 
 		// setup
-		final Person george = new Person();
-		george.setId(1L);
-		george.setFirstName("George");
-		george.setLastName("Washington");
+		final Person george = new Person(1L,"George",null,"Washington");
+		//george.setId(1L);
+		//george.setFirstName("George");
+		//george.setLastName("Washington");
 
 		// run test
 		final List<Person> personList = personMapper.getPersonList();
@@ -33,6 +33,19 @@ public class PersonMapperTest extends AbstractMapperTest {
 		assertEquals(10, personList.size());
 		beanTestHelper.diffBeans(george, personList.get(0));
 
+	}
+
+	@Test
+	public void testInsert() {
+		final Person person = new Person(null,"Bob","","Smith");
+		personMapper.insertPerson(person);
+
+		assertEquals(new Long(11),person.getId());
+
+		final Person person2 = new Person(null,"Bob","","Smith");
+		personMapper.insertPerson(person2);
+
+		assertEquals(new Long(12),person2.getId());
 	}
 
 }

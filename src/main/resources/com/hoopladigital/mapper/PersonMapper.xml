@@ -14,4 +14,30 @@
 		order by id
 	</select>
 
+	<select id="getPerson" resultType="Person">
+		select
+			id,
+			firstName,
+			middleName,
+			lastName
+		from Person where id = #{id}
+	</select>
+
+	<select id="deletePerson">
+		delete from Person where id = #{id}
+	</select>
+
+	<update id="updatePerson">
+  update Person set
+    firstName = #{firstName,javaType=string,jdbcType=VARCHAR},
+    middleName = #{middleName,javaType=string,jdbcType=VARCHAR},
+    lastName = #{lastName,javaType=string,jdbcType=VARCHAR}
+  where id = #{id}
+</update>
+
+	<insert id="insertPerson" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO Person (firstName,middleName,lastName)
+		VALUES (#{firstName,javaType=string,jdbcType=VARCHAR},#{middleName,javaType=string,jdbcType=VARCHAR},#{lastName,javaType=string,jdbcType=VARCHAR})
+	</insert>
+
 </mapper>
