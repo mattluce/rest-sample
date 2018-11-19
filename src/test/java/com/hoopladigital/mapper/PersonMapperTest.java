@@ -48,4 +48,19 @@ public class PersonMapperTest extends AbstractMapperTest {
 		assertEquals(new Long(12),person2.getId());
 	}
 
+	@Test
+	public void testUpdate() {
+
+		final Long id = 1L;
+
+		final Person person = new Person(id,"Bob",null,"Smith");
+		personMapper.updatePerson(person);
+
+		final Person updatedPerson = personMapper.getPerson(id);
+
+		assertEquals("Bob",updatedPerson.getFirstName());
+		assertEquals("Smith",updatedPerson.getLastName());
+
+	}
+
 }
