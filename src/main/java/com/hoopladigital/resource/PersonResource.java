@@ -25,7 +25,7 @@ public class PersonResource {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("/{id}")
 	public Response getPerson(@PathParam("id") Long id) {
 		final Person person = personService.getPerson(id);
 		if (person == null) {
@@ -48,11 +48,11 @@ public class PersonResource {
 	@POST
 	public Response insert(Person person) {
 		personService.insert(person);
-		return Response.ok().entity(person).build();
+		return Response.status(Response.Status.CREATED).entity(person).build();
 	}
 
 	@DELETE
-	@Path("{id}")
+	@Path("/{id}")
 	public Response delete(@PathParam("id") Long id) {
 
 		final Person person = personService.getPerson(id);
