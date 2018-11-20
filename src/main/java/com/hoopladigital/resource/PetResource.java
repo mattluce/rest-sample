@@ -51,6 +51,10 @@ public class PetResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response insert(@PathParam("personId") Long personId, Pet pet) {
 
+		if (personService.getPerson(personId) == null) {
+			throw new NotFoundException();
+		}
+
 		pet.setPersonId(personId);
 		petService.insert(pet);
 		return Response.status(Response.Status.CREATED).entity(pet).build();
